@@ -95,7 +95,7 @@ def game(prevHand = False):
         guess = gameInput()
         if guess == '.':
             break
-        if not validateUserGuess(hand, guess) and not validateWordExists(guess):
+        if not validateUserGuess(hand, guess) or not validateWordExists(guess):
             print('Invalid word, please try again.')
         else:
             points = scoreUserGuess(guess)
