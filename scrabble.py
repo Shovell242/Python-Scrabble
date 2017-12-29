@@ -1,5 +1,8 @@
 import random
 
+VOWELS = 'aeiou'
+CONSONANTS = 'bcdfghjklmnpqrstvwyxz'
+
 SCRABBLE_LETTER_VALUES = {
     'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4, 'i': 1, 'j': 8, 'k': 5, 'l': 1, 'm': 3, 'n': 1, 'o': 1, 'p': 3, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 1, 'v': 4, 'w': 4, 'x': 8, 'y': 4, 'z': 10
 }
@@ -22,7 +25,15 @@ def dealHand():
     Returns: a random set of lower case characters 
     based on the 'WORDS_INV_TOTAL' as quantity of random characters
     '''
-    return random.sample(SCRABBLE_LETTER_VALUES.keys(), WORDS_INV_TOTAL)
+    hand = []
+
+    vowelTotal = WORDS_INV_TOTAL // 3
+    for i in range(vowelTotal):
+        hand.append(VOWELS[random.randrange(0, len(VOWELS))])
+    for i in range(vowelTotal, WORDS_INV_TOTAL):
+        hand.append(CONSONANTS[random.randrange(0, len(CONSONANTS))])
+
+    return hand
 
 def validateUserGuess(hand, guess):
     '''
