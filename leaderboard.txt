@@ -8,3 +8,6 @@ ajl: 0
 ajl: 125
 ajl: 38
 ajl: 64
+rl: 70
+rl: 100
+rl: 46

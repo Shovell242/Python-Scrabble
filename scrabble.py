@@ -10,6 +10,8 @@ SCRABBLE_LETTER_VALUES = {
 
 WORD_LIST_FNAME = 'words.txt'
 
+LEADERBOARD_FNAME = 'leaderboard.txt'
+
 WORDS_INV_TOTAL = 9
 
 def loadWords():
@@ -33,7 +35,8 @@ def dealHand():
         hand.append(VOWELS[random.randrange(0, len(VOWELS))])
     for i in range(vowelTotal, WORDS_INV_TOTAL):
         hand.append(CONSONANTS[random.randrange(0, len(CONSONANTS))])
-    random.shuffle(hand)    
+    random.shuffle(hand) 
+
     return hand
 
 def validateUserGuess(hand, guess):
@@ -51,6 +54,12 @@ def validateUserGuess(hand, guess):
     return True
 
 def mutateHand(hand, guess):
+    '''
+    This assumes that all characters in guess are located in the hand list
+
+    Input: current hand has a list and guess as a string
+    Returns: Mutates the hand list by removing instances where a character in guess occurs
+    '''
     for char in guess:
         hand.remove(char)
 
@@ -102,17 +111,36 @@ def gameInput():
     return ans
 
 def getUsername():
+    '''
+    For purpose of a storing a user id to the high score leaderboard function
+    Takes in a string and returns that same string
+    '''
     usrName = input('Please enter your initials!: ')
     return usrName
 
 def outputScore(name, score):
-    file = open('leaderboard.txt', 'a')
+    '''
+    inputs: name as a string and score as an integer
+    this function appends name and score to the leaderboard text file
+    '''
+    file = open(LEADERBOARD_FNAME, 'a')
     file.write(name + ': ' + str(score) + '\n')
     file.close()
 
 def formatLeaderboard():
+    '''
+    opens the leaderboard file and iterates over each line.
+    using a regex, grabs the user initials and score and appends
+    that data into the array 'games' as a list
+
+    after all data is in the games list a sort is completed that will
+    put the highest scores first in the games list.
+
+    Retuns: A list contains individual lists of user initials and scores sorted by
+    the highest user score
+    '''
     games = []
-    file = open('leaderboard.txt', 'r')
+    file = open(LEADERBOARD_FNAME, 'r')
     for line in file:
         initRegex = re.compile(r'.+:')
         init = initRegex.search(line)
@@ -123,13 +151,16 @@ def formatLeaderboard():
     return gamesSort
 
 def printLeaderboard():
+    '''
+    Using the formatLeaderboard() method that returns a list of lists.
+    This function prints out the top 5 highest user scores by slicing down
+    that list of lists and printing out the data
+    '''
     print('---LEADERBOARD---')
-    arr = formatLeaderboard()
-    for i in range(6):
-        try:
-            print(arr[i][0], arr[i][1])
-        except:
-            print(' ')
+    arr = formatLeaderboard()[:5]
+    for i in arr:
+        print(i[0].rjust(7), str(i[1]).rjust(5))
+
 
 def game(prevHand = False):
     printLeaderboard()
