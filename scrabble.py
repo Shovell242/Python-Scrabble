@@ -1,4 +1,5 @@
-import random
+import random, re
+from operator import itemgetter
 
 VOWELS = 'aeiou'
 CONSONANTS = 'bcdfghjklmnpqrstvwyxz'
@@ -9,7 +10,7 @@ SCRABBLE_LETTER_VALUES = {
 
 WORD_LIST_FNAME = 'words.txt'
 
-WORDS_INV_TOTAL = 7
+WORDS_INV_TOTAL = 9
 
 def loadWords():
     '''
@@ -32,7 +33,7 @@ def dealHand():
         hand.append(VOWELS[random.randrange(0, len(VOWELS))])
     for i in range(vowelTotal, WORDS_INV_TOTAL):
         hand.append(CONSONANTS[random.randrange(0, len(CONSONANTS))])
-
+    random.shuffle(hand)    
     return hand
 
 def validateUserGuess(hand, guess):
@@ -41,12 +42,17 @@ def validateUserGuess(hand, guess):
     as well as the actual word guess of the user
     Returns: True or False if the user has used only valid characters in their guess
     '''
+    handCopy = hand.copy()
     for char in guess:
         if char in hand:
-            hand.remove(char)
+            handCopy.remove(char)
         else:
             return False
     return True
+
+def mutateHand(hand, guess):
+    for char in guess:
+        hand.remove(char)
 
 def validateWordExists(guess):
     '''
@@ -95,27 +101,60 @@ def gameInput():
     ans = input('Enter word, or a "." to indicate that you are finished: ')
     return ans
 
+def getUsername():
+    usrName = input('Please enter your initials!: ')
+    return usrName
+
+def outputScore(name, score):
+    file = open('leaderboard.txt', 'a')
+    file.write(name + ': ' + str(score) + '\n')
+    file.close()
+
+def formatLeaderboard():
+    games = []
+    file = open('leaderboard.txt', 'r')
+    for line in file:
+        initRegex = re.compile(r'.+:')
+        init = initRegex.search(line)
+        scoreRegex = re.compile(r'\d+')
+        score = scoreRegex.search(line)
+        games.append([init.group(), int(score.group())])  
+    gamesSort = sorted(games, key = itemgetter(1), reverse = True)
+    return gamesSort
+
+def printLeaderboard():
+    print('---LEADERBOARD---')
+    arr = formatLeaderboard()
+    for i in range(6):
+        try:
+            print(arr[i][0], arr[i][1])
+        except:
+            print(' ')
+
 def game(prevHand = False):
+    printLeaderboard()
     if prevHand:
         hand = prevHand
     else:
         hand = dealHand()
     score = 0
+    name = getUsername()
     while True:
         print('Current Hand:', ' '.join(hand))
         guess = gameInput()
         if guess == '.':
             break
-        if not validateUserGuess(hand, guess) or not validateWordExists(guess):
+        if not validateWordExists(guess) or not validateUserGuess(hand, guess): 
             print('Invalid word, please try again.')
         else:
+            mutateHand(hand, guess)
             points = scoreUserGuess(guess)
             print(guess, 'has earned', str(points), 'points!')
             score += points
     print('Total score:', score, 'points')
+    outputScore(name, score)
 
 game()
-
 
         
 

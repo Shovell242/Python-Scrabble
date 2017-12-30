@@ -1,0 +1,10 @@
+rl: 39
+ajl: 43
+rl: 30
+rl: 88
+ajl: 76
+ajl: 54
+ajl: 0
+ajl: 125
+ajl: 38
+ajl: 64
